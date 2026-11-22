@@ -1,0 +1,1890 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Абетка-Гра — Українська абетка для дошкільнят</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* Base Typography & Tactile Storybook Styling */
+    :root {
+      --bg-cream: #FFFDF7;
+      --card-white: #FFFFFF;
+      --sunny: #FFD166;
+      --sunny-dark: #F4B932;
+      --coral: #FF6B6B;
+      --coral-dark: #E04F4F;
+      --mint: #06D6A0;
+      --mint-dark: #05B384;
+      --sky: #4EA8DE;
+      --sky-dark: #338EC4;
+      --lavender: #9B87F5;
+      --navy: #1D3557;
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background-color: var(--bg-cream);
+      background-image:
+        radial-gradient(circle at 12% 18%, rgba(255, 209, 102, 0.25) 0%, transparent 28%),
+        radial-gradient(circle at 88% 82%, rgba(78, 168, 222, 0.2) 0%, transparent 32%),
+        radial-gradient(circle at 82% 15%, rgba(6, 214, 160, 0.18) 0%, transparent 25%);
+      color: var(--navy);
+      margin: 0;
+      min-height: 100dvh;
+      overflow-x: hidden;
+    }
+
+    /* Tactile 3D Push Buttons */
+    .btn-3d {
+      transition: transform 0.14s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.14s ease, filter 0.14s ease;
+      cursor: pointer;
+    }
+    .btn-3d:active {
+      transform: translateY(4px) scale(0.98);
+    }
+
+    .btn-sunny {
+      background: linear-gradient(180deg, #FFE08A 0%, #FFD166 100%);
+      box-shadow: 0 7px 0 #E0A82E, 0 12px 20px rgba(224, 168, 46, 0.25);
+      color: var(--navy);
+    }
+    .btn-sunny:active {
+      box-shadow: 0 2px 0 #E0A82E, 0 5px 10px rgba(224, 168, 46, 0.2);
+    }
+
+    .btn-mint {
+      background: linear-gradient(180deg, #2CEAA3 0%, #06D6A0 100%);
+      box-shadow: 0 7px 0 #049E76, 0 12px 20px rgba(6, 214, 160, 0.25);
+      color: #FFFFFF;
+    }
+    .btn-mint:active {
+      box-shadow: 0 2px 0 #049E76, 0 5px 10px rgba(6, 214, 160, 0.2);
+    }
+
+    .btn-sky {
+      background: linear-gradient(180deg, #6EC1F2 0%, #4EA8DE 100%);
+      box-shadow: 0 7px 0 #2E7FB0, 0 12px 20px rgba(78, 168, 222, 0.25);
+      color: #FFFFFF;
+    }
+    .btn-sky:active {
+      box-shadow: 0 2px 0 #2E7FB0, 0 5px 10px rgba(78, 168, 222, 0.2);
+    }
+
+    .btn-white {
+      background: #FFFFFF;
+      border: 3px solid #E6ECF5;
+      box-shadow: 0 6px 0 #D5DFEC, 0 10px 18px rgba(29, 53, 87, 0.08);
+      color: var(--navy);
+    }
+    .btn-white:active {
+      box-shadow: 0 2px 0 #D5DFEC, 0 4px 8px rgba(29, 53, 87, 0.08);
+    }
+
+    /* Letter Cards */
+    .letter-card {
+      border-radius: 28px;
+      background: #FFFFFF;
+      border: 4px solid #E9EFF7;
+      box-shadow: 0 10px 0 #D8E2F0, 0 18px 28px rgba(29, 53, 87, 0.1);
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .letter-card:hover {
+      transform: translateY(-4px);
+    }
+    .letter-card.explored {
+      border-color: var(--mint);
+      box-shadow: 0 10px 0 #05B384, 0 18px 28px rgba(6, 214, 160, 0.22);
+    }
+    .letter-card.correct-flash {
+      border-color: var(--mint);
+      background: #EBFFF8;
+      animation: popBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .letter-card.gentle-wiggle {
+      animation: gentleWiggle 0.45s ease-in-out;
+      border-color: #FFD166;
+    }
+
+    @keyframes popBounce {
+      0% { transform: scale(1); }
+      40% { transform: scale(1.1); }
+      70% { transform: scale(0.96); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes gentleWiggle {
+      0%, 100% { transform: translateX(0) rotate(0deg); }
+      20% { transform: translateX(-8px) rotate(-3deg); }
+      40% { transform: translateX(8px) rotate(3deg); }
+      60% { transform: translateX(-5px) rotate(-2deg); }
+      80% { transform: translateX(5px) rotate(2deg); }
+    }
+
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .animate-float {
+      animation: floatSlow 3.2s ease-in-out infinite;
+    }
+
+    @keyframes pulseRecord {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.55); }
+      50% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+    }
+
+    .recording-pulse {
+      animation: pulseRecord 1.1s infinite;
+    }
+
+    /* Bubble Arena Styles */
+    .bubble-item {
+      position: absolute;
+      border-radius: 9999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      line-height: 1;
+      cursor: pointer;
+      box-shadow:
+        inset -8px -10px 18px rgba(29, 53, 87, 0.12),
+        inset 8px 10px 18px rgba(255, 255, 255, 0.85),
+        0 10px 20px rgba(29, 53, 87, 0.14);
+      border: 3px solid rgba(255, 255, 255, 0.9);
+      transition: transform 0.15s ease, opacity 0.2s ease;
+      touch-action: manipulation;
+    }
+    .bubble-item::after {
+      content: '';
+      position: absolute;
+      top: 16%;
+      left: 20%;
+      width: 24%;
+      height: 14%;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.75);
+      transform: rotate(-35deg);
+      pointer-events: none;
+    }
+
+    /* Confetti Particle */
+    .confetti-piece {
+      position: fixed;
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+      pointer-events: none;
+      z-index: 100;
+      animation: confettiFall 1.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    }
+
+    @keyframes confettiFall {
+      0% {
+        opacity: 1;
+        transform: translate(0, 0) rotate(0deg) scale(1);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(var(--tx), var(--ty)) rotate(var(--rot)) scale(0.6);
+      }
+    }
+
+    /* Custom Scrollbar for Parent Modal */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #F1F5F9;
+      border-radius: 8px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #CBD5E1;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body class="flex flex-col min-h-dvh">
+
+  <!-- TOP NAVIGATION BAR -->
+  <header id="top-bar" class="w-full max-w-5xl mx-auto px-4 pt-4 pb-2 flex items-center justify-between gap-2 z-20">
+    <button id="btn-home" onclick="goHome()" class="btn-3d btn-white rounded-2xl px-4 py-2.5 font-extrabold text-base sm:text-lg flex items-center gap-2 hidden" aria-label="На головну">
+      <span class="text-xl">🏠</span>
+      <span class="hidden sm:inline">На головну</span>
+    </button>
+
+    <!-- Progress Dots during Game Stages -->
+    <div id="stage-progress" class="hidden items-center gap-2 sm:gap-3 bg-white/90 backdrop-blur px-4 py-2 rounded-full border-2 border-slate-200 shadow-sm mx-auto">
+      <span id="dot-0" class="w-3.5 h-3.5 rounded-full bg-slate-200 transition-all"></span>
+      <span id="dot-1" class="w-3.5 h-3.5 rounded-full bg-slate-200 transition-all"></span>
+      <span id="dot-2" class="w-3.5 h-3.5 rounded-full bg-slate-200 transition-all"></span>
+      <span id="dot-3" class="w-3.5 h-3.5 rounded-full bg-slate-200 transition-all"></span>
+      <span id="stage-label" class="text-xs sm:text-sm font-extrabold text-slate-500 ml-1">Картки</span>
+    </div>
+
+    <div class="flex items-center gap-2 ml-auto">
+      <!-- Replay Current Audio Prompt Button (Visible in Stages) -->
+      <button id="btn-replay-global" onclick="replayCurrentStagePrompt()" class="hidden btn-3d btn-sunny rounded-2xl p-2.5 sm:px-3.5 sm:py-2.5 font-extrabold text-lg items-center gap-1.5" title="Повторити озвучку">
+        <span>🗣️</span>
+        <span class="hidden sm:inline text-sm">Повторити</span>
+      </button>
+
+      <!-- Sound Toggle -->
+      <button id="btn-sound-toggle" onclick="toggleSound()" class="btn-3d btn-white rounded-2xl p-2.5 sm:px-3.5 sm:py-2.5 font-extrabold text-lg flex items-center gap-1.5" title="Увімкнути або вимкнути звук">
+        <span id="sound-icon">🔊</span>
+      </button>
+
+      <!-- Parent Settings Hold-to-Open Button (Visible on Home) -->
+      <button
+        id="btn-parent-open"
+        onpointerdown="startParentHold(event)"
+        onpointerup="cancelParentHold()"
+        onpointerleave="cancelParentHold()"
+        onpointercancel="cancelParentHold()"
+        class="relative overflow-hidden btn-3d btn-white rounded-2xl px-4 py-2.5 font-extrabold text-base flex items-center gap-2 select-none"
+        title="Утримуйте 1 секунду, щоб відкрити налаштування"
+      >
+        <span id="parent-hold-fill" class="absolute inset-y-0 left-0 w-0 bg-amber-200/75 pointer-events-none transition-none"></span>
+        <span class="relative z-10">⚙️</span>
+        <span class="relative z-10">Для батьків <span class="hidden md:inline text-xs text-slate-400 font-bold">(утрим. 1с)</span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN CONTENT CONTAINER -->
+  <main class="flex-1 w-full max-w-5xl mx-auto px-4 pb-8 flex flex-col justify-center">
+
+    <!-- ==================== SCREEN 0: HOME SCREEN ==================== -->
+    <section id="screen-home" class="flex flex-col items-center text-center py-4 sm:py-6">
+      <div class="inline-flex items-center gap-2 bg-amber-100 border-2 border-amber-300 text-amber-900 px-4 py-1.5 rounded-full font-extrabold text-sm mb-4">
+        <span>🇺🇦</span>
+        <span>Вчимо літери граючись!</span>
+      </div>
+
+      <div class="text-6xl sm:text-7xl mb-3 animate-float">🦁🎈📚</div>
+      <h1 class="text-4xl sm:text-6xl font-black tracking-tight text-[#1D3557] mb-3">
+        Абетка-Гра
+      </h1>
+      <p class="text-lg sm:text-xl font-bold text-slate-600 max-w-md mb-6">
+        Познайомся з 2–3 літерами та зіграй у веселі міні-ігри, щоб запам'ятати їх!
+      </p>
+
+      <!-- Big Play CTA -->
+      <button onclick="startNewRound()" class="btn-3d btn-mint rounded-[28px] px-10 sm:px-14 py-5 sm:py-6 text-2xl sm:text-3xl font-black tracking-wide flex items-center gap-3 mb-8">
+        <span>Грати!</span>
+        <span class="text-3xl">🚀</span>
+      </button>
+
+      <!-- Active Study Pool Preview Card -->
+      <div class="w-full max-w-xl bg-white/95 rounded-[28px] p-5 sm:p-6 border-4 border-slate-100 shadow-lg">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+          <span class="font-extrabold text-slate-700 text-base sm:text-lg">
+            Обрані літери (<span id="home-active-count">8</span>):
+          </span>
+          <span id="home-difficulty-badge" class="px-3 py-1 rounded-full text-xs sm:text-sm font-extrabold bg-sky-100 text-sky-800">
+            Рівень: Ніжний
+          </span>
+        </div>
+
+        <div id="home-letters-preview" class="flex flex-wrap justify-center gap-2 mb-3">
+          <!-- Populated dynamically -->
+        </div>
+
+        <button onclick="openParentModal()" class="text-sm font-extrabold text-[#4EA8DE] hover:underline mt-1">
+          Змінити літери або складність у меню для батьків →
+        </button>
+      </div>
+    </section>
+
+    <!-- ==================== SCREEN 1: FLASHCARDS INTRODUCTION ==================== -->
+    <section id="screen-cards" class="hidden flex-col items-center text-center py-2">
+      <!-- Cards Container -->
+      <div id="flashcards-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 w-full max-w-4xl my-2">
+        <!-- Cards injected here -->
+      </div>
+
+      <!-- Continue to Mini-Games CTA -->
+      <div class="mt-6 h-20 flex items-center justify-center">
+        <button id="btn-to-games" onclick="startMiniGame1()" class="hidden btn-3d btn-sunny rounded-[26px] px-8 sm:px-12 py-4 sm:py-5 text-xl sm:text-2xl font-black items-center gap-3">
+          <span>Далі до ігор!</span>
+          <span class="text-2xl">🎮</span>
+        </button>
+        <p id="cards-hint-text" class="text-slate-500 font-bold text-base">
+          Натисни на всі картки, щоб продовжити ✨
+        </p>
+      </div>
+    </section>
+
+    <!-- ==================== SCREEN 2: MINI-GAME 1 (SOUND & LETTER MATCH) ==================== -->
+    <section id="screen-game1" class="hidden flex-col items-center text-center py-2">
+      <div class="flex items-center gap-2 mb-2">
+        <span class="px-3.5 py-1 rounded-full bg-sky-100 text-sky-800 font-extrabold text-sm">
+          Гра 1 з 3 • Знайди літеру
+        </span>
+        <span id="g1-score-pill" class="px-3.5 py-1 rounded-full bg-amber-100 text-amber-900 font-extrabold text-sm">
+          ⭐ 0 / 3
+        </span>
+      </div>
+
+      <!-- Prompt Banner with Audio Replay -->
+      <div class="bg-white rounded-[28px] border-4 border-sky-200 px-6 py-4 sm:px-10 sm:py-5 shadow-md mb-6 flex flex-col sm:flex-row items-center gap-4">
+        <button onclick="replayGame1Prompt()" class="btn-3d btn-sky rounded-2xl w-16 h-16 flex items-center justify-center text-3xl shrink-0" aria-label="Повторити звук">
+          🔊
+        </button>
+        <div class="text-center sm:text-left">
+          <p class="text-sm font-extrabold text-slate-400 uppercase tracking-wider">Послухай та знайди</p>
+          <h2 id="g1-prompt-text" class="text-2xl sm:text-3xl font-black text-[#1D3557]">
+            Де літера «А»?
+          </h2>
+        </div>
+      </div>
+
+      <!-- Choice Cards -->
+      <div id="g1-choices" class="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6 w-full max-w-3xl">
+        <!-- Choices injected dynamically -->
+      </div>
+
+      <p id="g1-feedback" class="mt-5 font-extrabold text-lg sm:text-xl min-h-[32px] text-[#05B384]"></p>
+    </section>
+
+    <!-- ==================== SCREEN 3: MINI-GAME 2 (PICTURE TO LETTER) ==================== -->
+    <section id="screen-game2" class="hidden flex-col items-center text-center py-2">
+      <div class="flex items-center gap-2 mb-2">
+        <span class="px-3.5 py-1 rounded-full bg-purple-100 text-purple-800 font-extrabold text-sm">
+          Гра 2 з 3 • Чия картинка?
+        </span>
+        <span id="g2-score-pill" class="px-3.5 py-1 rounded-full bg-amber-100 text-amber-900 font-extrabold text-sm">
+          ⭐ 0 / 3
+        </span>
+      </div>
+
+      <!-- Picture Clue Card -->
+      <div class="bg-white rounded-[32px] border-4 border-purple-200 px-8 py-5 shadow-md mb-6 flex flex-col items-center max-w-md w-full">
+        <button onclick="replayGame2Prompt()" class="group relative flex flex-col items-center focus:outline-none">
+          <div id="g2-emoji" class="text-7xl sm:text-8xl mb-2 transition-transform group-active:scale-95">
+            🦈
+          </div>
+          <div id="g2-word-label" class="text-2xl sm:text-3xl font-black text-[#1D3557] tracking-wide">
+            <span class="text-[#FF6B6B] underline decoration-4">А</span>кула
+          </div>
+          <span class="mt-2 inline-flex items-center gap-1.5 text-xs font-extrabold bg-slate-100 text-slate-600 px-3 py-1 rounded-full">
+            🔊 Натисни, щоб почути слово
+          </span>
+        </button>
+      </div>
+
+      <!-- Letter Options -->
+      <div id="g2-choices" class="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6 w-full max-w-3xl">
+        <!-- Letter buttons injected dynamically -->
+      </div>
+
+      <p id="g2-feedback" class="mt-5 font-extrabold text-lg sm:text-xl min-h-[32px] text-[#05B384]"></p>
+    </section>
+
+    <!-- ==================== SCREEN 4: MINI-GAME 3 (FLOATING BUBBLE CATCH) ==================== -->
+    <section id="screen-game3" class="hidden flex-col items-center text-center py-2 w-full">
+      <div class="flex flex-wrap items-center justify-center gap-3 mb-3">
+        <span class="px-3.5 py-1 rounded-full bg-emerald-100 text-emerald-800 font-extrabold text-sm">
+          Гра 3 з 3 • Лови кульки!
+        </span>
+        <div id="g3-stars-meter" class="flex items-center gap-1 bg-white px-4 py-1 rounded-full border-2 border-amber-200 text-xl">
+          <span>☆</span><span>☆</span><span>☆</span><span>☆</span>
+        </div>
+      </div>
+
+      <!-- Target Letter Header -->
+      <div class="bg-white rounded-2xl border-3 border-emerald-200 px-5 py-2.5 shadow-sm mb-3 flex items-center gap-3">
+        <button onclick="replayGame3Prompt()" class="btn-3d btn-mint rounded-xl w-11 h-11 flex items-center justify-center text-xl">
+          🔊
+        </button>
+        <span class="font-extrabold text-lg sm:text-2xl text-[#1D3557] flex items-center gap-2">
+          <span>Лови кульки з літерою:</span>
+          <span id="g3-target-letter" class="inline-block bg-amber-200 text-[#1D3557] px-3.5 py-1 rounded-xl font-black text-4xl sm:text-5xl leading-none">
+            А
+          </span>
+        </span>
+      </div>
+
+      <!-- Interactive Bubble Arena -->
+      <div id="bubble-arena" class="relative w-full max-w-3xl h-[340px] sm:h-[400px] bg-gradient-to-b from-sky-100/80 via-white/90 to-emerald-50/80 rounded-[32px] border-4 border-sky-200 shadow-inner overflow-hidden">
+        <!-- Bubbles spawn and animate here -->
+      </div>
+    </section>
+
+    <!-- ==================== SCREEN 5: ROUND CELEBRATION ==================== -->
+    <section id="screen-celebration" class="hidden flex-col items-center text-center py-4">
+      <div class="text-6xl sm:text-7xl mb-2 animate-bounce">🏆🎉🌟</div>
+      <h2 class="text-3xl sm:text-5xl font-black text-[#1D3557] mb-2">
+        Молодець! Чудова робота!
+      </h2>
+      <p class="text-lg sm:text-xl font-bold text-slate-600 mb-6">
+        Ти чудово вивчив ці літери:
+      </p>
+
+      <!-- Learned Letters Summary -->
+      <div id="celebration-letters" class="flex flex-wrap justify-center gap-4 mb-8">
+        <!-- Summary badges injected here -->
+      </div>
+
+      <div class="flex flex-col sm:flex-row items-center gap-4">
+        <button onclick="startNewRound()" class="btn-3d btn-mint rounded-[26px] px-8 py-4 sm:px-10 sm:py-5 text-xl sm:text-2xl font-black flex items-center gap-3">
+          <span>Наступні літери</span>
+          <span>➡️</span>
+        </button>
+
+        <button onclick="goHome()" class="btn-3d btn-white rounded-[26px] px-7 py-4 text-lg sm:text-xl font-extrabold flex items-center gap-2">
+          <span>🏠</span>
+          <span>На головну</span>
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================== PARENT CONTROLS MODAL ==================== -->
+  <div id="parent-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden items-center justify-center p-3 sm:p-5">
+    <div class="bg-white w-full max-w-3xl max-h-[90dvh] rounded-[32px] shadow-2xl border-4 border-slate-100 flex flex-col overflow-hidden">
+      <!-- Modal Header -->
+      <div class="px-6 py-4 bg-slate-50 border-b-2 border-slate-100 flex items-center justify-between gap-2">
+        <div>
+          <h3 class="text-xl sm:text-2xl font-black text-[#1D3557] flex items-center gap-2">
+            <span>⚙️</span>
+            <span>Налаштування для батьків</span>
+          </h3>
+          <div class="flex flex-wrap items-center gap-2 mt-1">
+            <p class="text-xs sm:text-sm font-bold text-slate-500">
+              Оберіть літери, складність та запишіть власний голос
+            </p>
+            <span id="tts-status-badge" class="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-slate-200 text-slate-700">
+              Перевірка голосу uk-UA...
+            </span>
+          </div>
+        </div>
+        <button onclick="closeParentModal()" class="btn-3d btn-white rounded-2xl w-11 h-11 flex items-center justify-center font-black text-xl shrink-0">
+          ✕
+        </button>
+      </div>
+
+      <!-- Modal Scrollable Content -->
+      <div class="p-5 sm:p-6 overflow-y-auto space-y-6">
+
+        <!-- 1. Difficulty Level Selection -->
+        <div>
+          <label class="block font-black text-base sm:text-lg text-[#1D3557] mb-3">
+            1. Рівень складності:
+          </label>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <button type="button" onclick="setDifficulty('gentle')" id="diff-btn-gentle" class="diff-option text-left p-4 rounded-2xl border-3 transition-all">
+              <div class="font-black text-lg flex items-center gap-1.5">
+                <span>🌱</span> Ніжний
+              </div>
+              <p class="text-xs font-bold text-slate-600 mt-1">
+                2 літери за раунд, великі літери, підказки слів та картинок.
+              </p>
+            </button>
+
+            <button type="button" onclick="setDifficulty('explorer')" id="diff-btn-explorer" class="diff-option text-left p-4 rounded-2xl border-3 transition-all">
+              <div class="font-black text-lg flex items-center gap-1.5">
+                <span>🧭</span> Дослідник
+              </div>
+              <p class="text-xs font-bold text-slate-600 mt-1">
+                3 літери за раунд, великі й малі літери, вгадування за картинкою без підпису.
+              </p>
+            </button>
+
+            <button type="button" onclick="setDifficulty('confident')" id="diff-btn-confident" class="diff-option text-left p-4 rounded-2xl border-3 transition-all">
+              <div class="font-black text-lg flex items-center gap-1.5">
+                <span>🚀</span> Впевнений
+              </div>
+              <p class="text-xs font-bold text-slate-600 mt-1">
+                3 літери за раунд, без підказок у грі 1 та швидші кульки!
+              </p>
+            </button>
+          </div>
+        </div>
+
+        <!-- 2. Cards Per Round Override -->
+        <div class="flex flex-wrap items-center justify-between gap-3 bg-slate-50 p-4 rounded-2xl border-2 border-slate-100">
+          <div>
+            <span class="font-black text-base text-[#1D3557]">Кількість літер за один раунд:</span>
+            <p class="text-xs font-bold text-slate-500">Рекомендовано 2–3 літери для дошкільнят</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="setCardsPerRound(2)" id="cpr-btn-2" class="px-5 py-2 rounded-xl font-black text-base border-2 transition-all">
+              2 літери
+            </button>
+            <button type="button" onclick="setCardsPerRound(3)" id="cpr-btn-3" class="px-5 py-2 rounded-xl font-black text-base border-2 transition-all">
+              3 літери
+            </button>
+          </div>
+        </div>
+
+        <!-- 3. Alphabet Letter Selection -->
+        <div>
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <label class="font-black text-base sm:text-lg text-[#1D3557]">
+              2. Літери для вивчення (<span id="modal-selected-count">8</span> з 33):
+            </label>
+            <div class="flex flex-wrap gap-1.5">
+              <button type="button" onclick="applyPreset('starter')" class="px-3 py-1.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-900 font-extrabold text-xs">
+                Перші літери
+              </button>
+              <button type="button" onclick="applyPreset('vowels')" class="px-3 py-1.5 rounded-xl bg-rose-100 hover:bg-rose-200 text-rose-900 font-extrabold text-xs">
+                Голосні
+              </button>
+              <button type="button" onclick="applyPreset('all')" class="px-3 py-1.5 rounded-xl bg-emerald-100 hover:bg-emerald-200 text-emerald-900 font-extrabold text-xs">
+                Усі 33
+              </button>
+              <button type="button" onclick="applyPreset('min')" class="px-3 py-1.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-extrabold text-xs">
+                Скинути (мін. 3)
+              </button>
+            </div>
+          </div>
+
+          <p id="modal-warning" class="hidden text-xs font-extrabold text-rose-600 mb-2">
+            ⚠️ Потрібно обрати щонайменше 3 літери для гри.
+          </p>
+
+          <div id="mic-status-banner" class="hidden text-xs font-extrabold bg-rose-50 border border-rose-200 text-rose-700 px-3 py-2 rounded-xl mb-3">
+            🎙️ Мікрофон недоступний або доступ заборонено. Працює синтезатор мовлення та звукові ефекти.
+          </div>
+
+          <!-- 33-Letter Grid with Custom Voice Recorder Controls -->
+          <div id="parent-alphabet-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5">
+            <!-- Checkable letter tiles + voice recorder injected here -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="px-6 py-4 bg-slate-50 border-t-2 border-slate-100 flex items-center justify-end gap-3">
+        <button onclick="saveAndCloseParentModal()" class="btn-3d btn-mint rounded-2xl px-7 py-3 font-black text-lg">
+          Зберегти та грати ✓
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /**
+     * =========================================================================
+     * 1. FULL UKRAINIAN ALPHABET DATASET (33 LETTERS WITH PHONICS STRINGS)
+     * =========================================================================
+     */
+    const UKRAINIAN_ALPHABET = [
+      { char: 'А', lower: 'а', type: 'vowel', phonics: 'а-а-а', word: 'Акула', emoji: '🦈', highlightIndex: 0 },
+      { char: 'Б', lower: 'б', type: 'consonant', phonics: 'б-б-б', word: 'Банан', emoji: '🍌', highlightIndex: 0 },
+      { char: 'В', lower: 'в', type: 'consonant', phonics: 'в-в-в', word: 'Ведмідь', emoji: '🐻', highlightIndex: 0 },
+      { char: 'Г', lower: 'г', type: 'consonant', phonics: 'г-г-г', word: 'Груша', emoji: '🍐', highlightIndex: 0 },
+      { char: 'Ґ', lower: 'ґ', type: 'consonant', phonics: 'ґ-ґ-ґ', word: 'Ґудзик', emoji: '🔘', highlightIndex: 0 },
+      { char: 'Д', lower: 'д', type: 'consonant', phonics: 'д-д-д', word: 'Дім', emoji: '🏠', highlightIndex: 0 },
+      { char: 'Е', lower: 'е', type: 'vowel', phonics: 'е-е-е', word: 'Екскаватор', emoji: '🚜', highlightIndex: 0 },
+      { char: 'Є', lower: 'є', type: 'vowel', phonics: 'є-є-є', word: 'Єнот', emoji: '🦝', highlightIndex: 0 },
+      { char: 'Ж', lower: 'ж', type: 'consonant', phonics: 'жжж', word: 'Жаба', emoji: '🐸', highlightIndex: 0 },
+      { char: 'З', lower: 'з', type: 'consonant', phonics: 'ззз', word: 'Заєць', emoji: '🐰', highlightIndex: 0 },
+      { char: 'И', lower: 'и', type: 'vowel', phonics: 'и-и-и', word: 'Кит', emoji: '🐋', highlightIndex: 1 },
+      { char: 'І', lower: 'і', type: 'vowel', phonics: 'і-і-і', word: 'Індик', emoji: '🦃', highlightIndex: 0 },
+      { char: 'Ї', lower: 'ї', type: 'vowel', phonics: 'ї-ї-ї', word: 'Їжак', emoji: '🦔', highlightIndex: 0 },
+      { char: 'Й', lower: 'й', type: 'consonant', phonics: 'й-й-й', word: 'Йогурт', emoji: '🥛', highlightIndex: 0 },
+      { char: 'К', lower: 'к', type: 'consonant', phonics: 'к-к-к', word: 'Кіт', emoji: '🐱', highlightIndex: 0 },
+      { char: 'Л', lower: 'л', type: 'consonant', phonics: 'ллл', word: 'Лев', emoji: '🦁', highlightIndex: 0 },
+      { char: 'М', lower: 'м', type: 'consonant', phonics: 'ммм', word: 'М’яч', emoji: '⚽', highlightIndex: 0 },
+      { char: 'Н', lower: 'н', type: 'consonant', phonics: 'ннн', word: 'Носоріг', emoji: '🦏', highlightIndex: 0 },
+      { char: 'О', lower: 'о', type: 'vowel', phonics: 'о-о-о', word: 'Огірок', emoji: '🥒', highlightIndex: 0 },
+      { char: 'П', lower: 'п', type: 'consonant', phonics: 'п-п-п', word: 'Папуга', emoji: '🦜', highlightIndex: 0 },
+      { char: 'Р', lower: 'р', type: 'consonant', phonics: 'ррр', word: 'Риба', emoji: '🐠', highlightIndex: 0 },
+      { char: 'С', lower: 'с', type: 'consonant', phonics: 'ссс', word: 'Сонце', emoji: '☀️', highlightIndex: 0 },
+      { char: 'Т', lower: 'т', type: 'consonant', phonics: 'т-т-т', word: 'Тигр', emoji: '🐯', highlightIndex: 0 },
+      { char: 'У', lower: 'у', type: 'vowel', phonics: 'у-у-у', word: 'Удав', emoji: '🐍', highlightIndex: 0 },
+      { char: 'Ф', lower: 'ф', type: 'consonant', phonics: 'ффф', word: 'Фламінго', emoji: '🦩', highlightIndex: 0 },
+      { char: 'Х', lower: 'х', type: 'consonant', phonics: 'ххх', word: 'Хмара', emoji: '☁️', highlightIndex: 0 },
+      { char: 'Ц', lower: 'ц', type: 'consonant', phonics: 'ц-ц-ц', word: 'Цукерка', emoji: '🍬', highlightIndex: 0 },
+      { char: 'Ч', lower: 'ч', type: 'consonant', phonics: 'ч-ч-ч', word: 'Черепаха', emoji: '🐢', highlightIndex: 0 },
+      { char: 'Ш', lower: 'ш', type: 'consonant', phonics: 'шшш', word: 'Шапка', emoji: '🧢', highlightIndex: 0 },
+      { char: 'Щ', lower: 'щ', type: 'consonant', phonics: 'щщщ', word: 'Щітка', emoji: '🪥', highlightIndex: 0 },
+      { char: 'Ь', lower: 'ь', type: 'sign', phonics: 'м’який знак', word: 'Кінь', emoji: '🐴', highlightIndex: 3 },
+      { char: 'Ю', lower: 'ю', type: 'vowel', phonics: 'ю-ю-ю', word: 'Тюлень', emoji: '🦭', highlightIndex: 1 },
+      { char: 'Я', lower: 'я', type: 'vowel', phonics: 'я-я-я', word: 'Яблуко', emoji: '🍎', highlightIndex: 0 }
+    ];
+
+    const STARTER_LETTERS = ['А', 'О', 'У', 'М', 'К', 'С', 'Л', 'Р'];
+    const VOWEL_LETTERS = UKRAINIAN_ALPHABET.filter(l => l.type === 'vowel').map(l => l.char);
+
+    /**
+     * =========================================================================
+     * 2. PERSISTENT SETTINGS & GAME STATE
+     * =========================================================================
+     */
+    const STORAGE_KEY = 'abetka_preschool_settings_v1';
+
+    let settings = {
+      selectedLetters: [...STARTER_LETTERS],
+      difficulty: 'gentle', // 'gentle' | 'explorer' | 'confident'
+      cardsPerRound: 2,
+      soundEnabled: true
+    };
+
+    let gameState = {
+      currentScreen: 'screen-home',
+      roundLetters: [],        // 2 or 3 Letter objects for current round
+      recentLetters: [],       // Avoid repeating exact same letters immediately
+      exploredSet: new Set(),  // Tracks tapped cards in Stage 1
+      g1Queue: [],
+      g1Index: 0,
+      g1Locked: false,
+      g2Queue: [],
+      g2Index: 0,
+      g2Locked: false,
+      g3Target: null,
+      g3Hits: 0,
+      g3Goal: 4,
+      bubbleInterval: null,
+      bubbleAnimFrame: null,
+      bubbles: []
+    };
+
+    function loadSettings() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed.selectedLetters) && parsed.selectedLetters.length >= 2) {
+            settings.selectedLetters = parsed.selectedLetters;
+          }
+          if (['gentle', 'explorer', 'confident'].includes(parsed.difficulty)) {
+            settings.difficulty = parsed.difficulty;
+          }
+          if ([2, 3].includes(parsed.cardsPerRound)) {
+            settings.cardsPerRound = parsed.cardsPerRound;
+          }
+          if (typeof parsed.soundEnabled === 'boolean') {
+            settings.soundEnabled = parsed.soundEnabled;
+          }
+        }
+      } catch (e) {
+        console.warn('Could not load saved settings:', e);
+      }
+    }
+
+    function saveSettings() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+      } catch (e) {
+        console.warn('Could not save settings:', e);
+      }
+    }
+
+    /**
+     * =========================================================================
+     * 3. HYBRID SOUND ENGINE (WEB AUDIO + UK-UA TTS + INDEXEDDB VOICE RECORDER)
+     * =========================================================================
+     */
+    class SoundEngine {
+      constructor() {
+        this.ctx = null;
+        this.ukVoice = null;
+        this.db = null;
+        this.recordedLetters = new Set();
+        this.activeAudioEl = null;
+        this.mediaRecorder = null;
+        this.recordingChar = null;
+        this.recordingTimeout = null;
+        this.recordedChunks = [];
+
+        this.initVoices();
+        this.initDB();
+      }
+
+      unlock() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) this.ctx = new AudioContext();
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume().catch(() => {});
+        }
+      }
+
+      initVoices() {
+        if (!('speechSynthesis' in window)) return;
+        const load = () => {
+          const voices = window.speechSynthesis.getVoices();
+          this.ukVoice =
+            voices.find(v => v.lang.toLowerCase() === 'uk-ua') ||
+            voices.find(v => v.lang.toLowerCase().startsWith('uk')) ||
+            null;
+          this.updateTTSStatusBadge();
+        };
+        load();
+        window.speechSynthesis.onvoiceschanged = load;
+      }
+
+      updateTTSStatusBadge() {
+        const badge = document.getElementById('tts-status-badge');
+        if (!badge) return;
+        if (this.ukVoice) {
+          badge.textContent = `✅ Голос uk-UA активний (${this.ukVoice.name.slice(0, 18)})`;
+          badge.className = 'px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-emerald-100 text-emerald-800';
+        } else {
+          badge.textContent = '⚠️ Немає системного голосу uk-UA — запишіть свій нижче!';
+          badge.className = 'px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-amber-100 text-amber-900';
+        }
+      }
+
+      initDB() {
+        if (!('indexedDB' in window)) return;
+        const req = indexedDB.open('AbetkaVoiceDB', 1);
+        req.onupgradeneeded = (e) => {
+          const db = e.target.result;
+          if (!db.objectStoreNames.contains('recordings')) {
+            db.createObjectStore('recordings', { keyPath: 'char' });
+          }
+        };
+        req.onsuccess = (e) => {
+          this.db = e.target.result;
+          this.refreshRecordedKeys();
+        };
+        req.onerror = (e) => console.warn('IndexedDB error:', e);
+      }
+
+      refreshRecordedKeys() {
+        if (!this.db) return;
+        const tx = this.db.transaction('recordings', 'readonly');
+        const store = tx.objectStore('recordings');
+        const req = store.getAllKeys();
+        req.onsuccess = () => {
+          this.recordedLetters = new Set(req.result || []);
+          if (!document.getElementById('parent-modal').classList.contains('hidden')) {
+            renderParentModalUI();
+          }
+        };
+      }
+
+      saveRecordingBlob(char, blob) {
+        return new Promise((resolve, reject) => {
+          if (!this.db) return reject('No DB');
+          const tx = this.db.transaction('recordings', 'readwrite');
+          tx.objectStore('recordings').put({ char, blob, updatedAt: Date.now() });
+          tx.oncomplete = () => {
+            this.recordedLetters.add(char);
+            resolve();
+          };
+          tx.onerror = () => reject(tx.error);
+        });
+      }
+
+      getRecordingBlob(char) {
+        return new Promise((resolve) => {
+          if (!this.db) return resolve(null);
+          const tx = this.db.transaction('recordings', 'readonly');
+          const req = tx.objectStore('recordings').get(char);
+          req.onsuccess = () => resolve(req.result ? req.result.blob : null);
+          req.onerror = () => resolve(null);
+        });
+      }
+
+      deleteRecording(char) {
+        return new Promise((resolve) => {
+          if (!this.db) return resolve();
+          const tx = this.db.transaction('recordings', 'readwrite');
+          tx.objectStore('recordings').delete(char);
+          tx.oncomplete = () => {
+            this.recordedLetters.delete(char);
+            resolve();
+          };
+        });
+      }
+
+      stopAllSpeech() {
+        if (this.activeAudioEl) {
+          this.activeAudioEl.pause();
+          this.activeAudioEl = null;
+        }
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+        }
+      }
+
+      // Priority 1: Play custom parent recording if stored in IndexedDB; Priority 2: uk-UA TTS
+      async playLetterVoice(char, fallbackText) {
+        if (!settings.soundEnabled) return;
+        this.unlock();
+        this.stopAllSpeech();
+
+        const customBlob = await this.getRecordingBlob(char);
+        if (customBlob) {
+          const url = URL.createObjectURL(customBlob);
+          const audio = new Audio(url);
+          this.activeAudioEl = audio;
+          audio.onended = () => URL.revokeObjectURL(url);
+          audio.play().catch(() => this.speakTTS(fallbackText));
+          return;
+        }
+
+        this.speakTTS(fallbackText);
+      }
+
+      speakTTS(text, rate = 0.85) {
+        if (!settings.soundEnabled) return;
+        this.unlock();
+        if (!('speechSynthesis' in window)) return;
+        try {
+          window.speechSynthesis.cancel();
+          const utter = new SpeechSynthesisUtterance(text);
+          utter.lang = 'uk-UA';
+          if (this.ukVoice) utter.voice = this.ukVoice;
+          utter.rate = rate;
+          utter.pitch = 1.1;
+          window.speechSynthesis.speak(utter);
+        } catch (e) {
+          // Graceful silent fallback; Web Audio SFX still run
+        }
+      }
+
+      playTone(freq, duration = 0.2, type = 'sine', delay = 0, gainVal = 0.18) {
+        if (!settings.soundEnabled) return;
+        this.unlock();
+        if (!this.ctx) return;
+
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, this.ctx.currentTime + delay);
+
+        gain.gain.setValueAtTime(0.001, this.ctx.currentTime + delay);
+        gain.gain.exponentialRampToValueAtTime(gainVal, this.ctx.currentTime + delay + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + delay + duration);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(this.ctx.currentTime + delay);
+        osc.stop(this.ctx.currentTime + delay + duration + 0.02);
+      }
+
+      playClick() {
+        this.playTone(440, 0.06, 'sine', 0, 0.12);
+      }
+
+      playPopSound() {
+        this.playTone(520, 0.09, 'sine', 0, 0.2);
+        this.playTone(780, 0.12, 'triangle', 0.04, 0.15);
+      }
+
+      playSuccessChime() {
+        this.playTone(523.25, 0.16, 'triangle', 0, 0.2);    // C5
+        this.playTone(659.25, 0.16, 'triangle', 0.1, 0.2);  // E5
+        this.playTone(783.99, 0.28, 'triangle', 0.2, 0.22); // G5
+      }
+
+      playGentleNudge() {
+        // Soft low wooden boop (non-scary for preschoolers)
+        this.playTone(250, 0.14, 'triangle', 0, 0.14);
+        this.playTone(195, 0.18, 'triangle', 0.07, 0.12);
+      }
+
+      playVictoryFanfare() {
+        const notes = [523.25, 659.25, 783.99, 1046.50];
+        notes.forEach((n, idx) => {
+          this.playTone(n, 0.25, 'triangle', idx * 0.11, 0.22);
+        });
+      }
+
+      async startRecording(char) {
+        this.stopAllSpeech();
+        if (this.mediaRecorder && this.mediaRecorder.state === 'recording') {
+          this.stopRecording();
+          return;
+        }
+
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          this.recordedChunks = [];
+          this.recordingChar = char;
+          this.mediaRecorder = new MediaRecorder(stream);
+
+          this.mediaRecorder.ondataavailable = (e) => {
+            if (e.data && e.data.size > 0) this.recordedChunks.push(e.data);
+          };
+
+          this.mediaRecorder.onstop = async () => {
+            stream.getTracks().forEach(t => t.stop());
+            const blob = new Blob(this.recordedChunks, { type: this.mediaRecorder.mimeType || 'audio/webm' });
+            const finishedChar = this.recordingChar;
+            this.recordingChar = null;
+            clearTimeout(this.recordingTimeout);
+
+            if (blob.size > 200) {
+              await this.saveRecordingBlob(finishedChar, blob);
+              this.playSuccessChime();
+            }
+            renderParentModalUI();
+          };
+
+          this.mediaRecorder.start();
+          renderParentModalUI();
+
+          // Auto-stop after 4.5 seconds to keep clips snappy for preschoolers
+          this.recordingTimeout = setTimeout(() => {
+            if (this.mediaRecorder && this.mediaRecorder.state === 'recording') {
+              this.stopRecording();
+            }
+          }, 4500);
+        } catch (err) {
+          document.getElementById('mic-status-banner').classList.remove('hidden');
+          this.playGentleNudge();
+        }
+      }
+
+      stopRecording() {
+        if (this.mediaRecorder && this.mediaRecorder.state === 'recording') {
+          this.mediaRecorder.stop();
+        }
+      }
+    }
+
+    const soundEngine = new SoundEngine();
+
+    // Unlock Web Audio on first user gesture across mobile/desktop
+    ['pointerdown', 'keydown'].forEach(evt => {
+      window.addEventListener(evt, () => soundEngine.unlock(), { once: true });
+    });
+
+    function toggleSound() {
+      settings.soundEnabled = !settings.soundEnabled;
+      saveSettings();
+      updateSoundIcon();
+      if (settings.soundEnabled) {
+        soundEngine.playPopSound();
+      } else {
+        soundEngine.stopAllSpeech();
+      }
+    }
+
+    function updateSoundIcon() {
+      document.getElementById('sound-icon').textContent = settings.soundEnabled ? '🔊' : '🔇';
+    }
+
+    /**
+     * =========================================================================
+     * 4. HELPER UTILITIES (CONFETTI, WORD HIGHLIGHT, SHUFFLE)
+     * =========================================================================
+     */
+    function shuffleArray(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function formatHighlightedWord(letterObj) {
+      const { word, highlightIndex } = letterObj;
+      return word.split('').map((ch, idx) => {
+        if (idx === highlightIndex) {
+          return `<span class="text-[#FF6B6B] font-black underline decoration-4 decoration-[#FFD166]">${ch}</span>`;
+        }
+        return ch;
+      }).join('');
+    }
+
+    function formatDisplayLetter(letterObj) {
+      if (settings.difficulty === 'gentle') {
+        return letterObj.char;
+      }
+      // Explorer & Confident show both uppercase and lowercase
+      return `${letterObj.char}${letterObj.lower}`;
+    }
+
+    function spawnConfetti(count = 28) {
+      const colors = ['#FF6B6B', '#FFD166', '#06D6A0', '#4EA8DE', '#9B87F5'];
+      for (let i = 0; i < count; i++) {
+        const el = document.createElement('div');
+        el.className = 'confetti-piece';
+        el.style.backgroundColor = colors[i % colors.length];
+        el.style.left = `${20 + Math.random() * 60}vw`;
+        el.style.top = `${25 + Math.random() * 25}vh`;
+        el.style.setProperty('--tx', `${(Math.random() - 0.5) * 320}px`);
+        el.style.setProperty('--ty', `${120 + Math.random() * 260}px`);
+        el.style.setProperty('--rot', `${Math.random() * 720 - 360}deg`);
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 1700);
+      }
+    }
+
+    /**
+     * =========================================================================
+     * 5. NAVIGATION & SCREEN MANAGEMENT
+     * =========================================================================
+     */
+    const SCREENS = ['screen-home', 'screen-cards', 'screen-game1', 'screen-game2', 'screen-game3', 'screen-celebration'];
+
+    function showScreen(screenId) {
+      cleanupBubbleArena();
+      gameState.currentScreen = screenId;
+      SCREENS.forEach(id => {
+        const el = document.getElementById(id);
+        if (id === screenId) {
+          el.classList.remove('hidden');
+          el.classList.add('flex');
+        } else {
+          el.classList.add('hidden');
+          el.classList.remove('flex');
+        }
+      });
+
+      const isHome = screenId === 'screen-home';
+      document.getElementById('btn-home').classList.toggle('hidden', isHome);
+      document.getElementById('btn-parent-open').classList.toggle('hidden', !isHome);
+
+      const replayBtn = document.getElementById('btn-replay-global');
+      const showReplay = ['screen-cards', 'screen-game1', 'screen-game2', 'screen-game3'].includes(screenId);
+      replayBtn.classList.toggle('hidden', !showReplay);
+      replayBtn.classList.toggle('flex', showReplay);
+
+      const progressBar = document.getElementById('stage-progress');
+      if (isHome || screenId === 'screen-celebration') {
+        progressBar.classList.add('hidden');
+        progressBar.classList.remove('flex');
+      } else {
+        progressBar.classList.remove('hidden');
+        progressBar.classList.add('flex');
+        updateProgressDots(screenId);
+      }
+    }
+
+    function replayCurrentStagePrompt() {
+      soundEngine.playClick();
+      if (gameState.currentScreen === 'screen-cards') {
+        soundEngine.speakTTS('Натискай на картки, щоб почути літери та слова!');
+      } else if (gameState.currentScreen === 'screen-game1') {
+        replayGame1Prompt();
+      } else if (gameState.currentScreen === 'screen-game2') {
+        replayGame2Prompt();
+      } else if (gameState.currentScreen === 'screen-game3') {
+        replayGame3Prompt();
+      }
+    }
+
+    function updateProgressDots(screenId) {
+      const stageMap = {
+        'screen-cards': { idx: 0, label: 'Картки' },
+        'screen-game1': { idx: 1, label: 'Гра 1' },
+        'screen-game2': { idx: 2, label: 'Гра 2' },
+        'screen-game3': { idx: 3, label: 'Гра 3' }
+      };
+      const info = stageMap[screenId] || { idx: 0, label: '' };
+      document.getElementById('stage-label').textContent = info.label;
+
+      for (let i = 0; i < 4; i++) {
+        const dot = document.getElementById(`dot-${i}`);
+        if (i < info.idx) {
+          dot.className = 'w-3.5 h-3.5 rounded-full bg-[#06D6A0] transition-all';
+        } else if (i === info.idx) {
+          dot.className = 'w-5 h-3.5 rounded-full bg-[#FFD166] ring-2 ring-amber-400 transition-all';
+        } else {
+          dot.className = 'w-3.5 h-3.5 rounded-full bg-slate-200 transition-all';
+        }
+      }
+    }
+
+    function goHome() {
+      soundEngine.stopAllSpeech();
+      renderHomePreview();
+      showScreen('screen-home');
+    }
+
+    function renderHomePreview() {
+      const container = document.getElementById('home-letters-preview');
+      const countEl = document.getElementById('home-active-count');
+      const diffBadge = document.getElementById('home-difficulty-badge');
+
+      countEl.textContent = settings.selectedLetters.length;
+
+      const diffNames = {
+        gentle: 'Рівень: Ніжний 🌱',
+        explorer: 'Рівень: Дослідник 🧭',
+        confident: 'Рівень: Впевнений 🚀'
+      };
+      diffBadge.textContent = diffNames[settings.difficulty];
+
+      container.innerHTML = settings.selectedLetters.map(ch => `
+        <span class="w-12 h-12 rounded-xl bg-amber-50 border-2 border-amber-200 flex items-center justify-center font-black text-2xl text-[#1D3557]">
+          ${ch}
+        </span>
+      `).join('');
+    }
+
+    /**
+     * =========================================================================
+     * 6. ROUND GENERATOR & STAGE 1 (2–3 FLASHCARDS INTRODUCTION)
+     * =========================================================================
+     */
+    function pickRoundLetters() {
+      const pool = UKRAINIAN_ALPHABET.filter(item => settings.selectedLetters.includes(item.char));
+      const count = Math.min(settings.cardsPerRound, pool.length);
+
+      // Prefer letters not used in the immediately previous round
+      let candidates = pool.filter(item => !gameState.recentLetters.includes(item.char));
+      if (candidates.length < count) {
+        candidates = pool;
+      }
+
+      const chosen = shuffleArray(candidates).slice(0, count);
+      gameState.recentLetters = chosen.map(c => c.char);
+      return chosen;
+    }
+
+    function startNewRound() {
+      soundEngine.playPopSound();
+      gameState.roundLetters = pickRoundLetters();
+      gameState.exploredSet = new Set();
+
+      renderFlashcards();
+      showScreen('screen-cards');
+      soundEngine.speakTTS('Познайомимося з новими літерами! Натискай на картки.');
+    }
+
+    function renderFlashcards() {
+      const grid = document.getElementById('flashcards-grid');
+      const btnNext = document.getElementById('btn-to-games');
+      const hintText = document.getElementById('cards-hint-text');
+
+      btnNext.classList.add('hidden');
+      btnNext.classList.remove('flex');
+      hintText.classList.remove('hidden');
+
+      // Adjust grid columns cleanly for 2 vs 3 cards
+      if (gameState.roundLetters.length === 2) {
+        grid.className = 'grid grid-cols-1 sm:grid-cols-2 gap-6 w-full max-w-2xl my-2';
+      } else {
+        grid.className = 'grid grid-cols-1 sm:grid-cols-3 gap-5 w-full max-w-4xl my-2';
+      }
+
+      const cardColors = [
+        'from-amber-50 to-white',
+        'from-sky-50 to-white',
+        'from-rose-50 to-white'
+      ];
+
+      grid.innerHTML = gameState.roundLetters.map((item, idx) => `
+        <button
+          id="intro-card-${item.char}"
+          onclick="handleCardTap('${item.char}')"
+          class="letter-card relative p-6 sm:p-7 flex flex-col items-center justify-between bg-gradient-to-b ${cardColors[idx % cardColors.length]} cursor-pointer focus:outline-none"
+        >
+          <!-- Explored Star Badge -->
+          <div id="star-badge-${item.char}" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-slate-100 text-slate-300 flex items-center justify-center text-xl font-black transition-all">
+            ★
+          </div>
+
+          <!-- Big Letter -->
+          <div class="text-8xl sm:text-9xl font-black text-[#1D3557] tracking-tight leading-none my-1">
+            ${formatDisplayLetter(item)}
+          </div>
+
+          <!-- Illustration -->
+          <div class="text-6xl sm:text-7xl my-3 transform transition-transform">
+            ${item.emoji}
+          </div>
+
+          <!-- Example Word with Highlighted Letter -->
+          <div class="text-2xl sm:text-3xl font-extrabold text-[#1D3557]">
+            ${formatHighlightedWord(item)}
+          </div>
+
+          <div class="mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/90 border border-slate-200 text-xs font-extrabold text-slate-500">
+            <span>🔊</span>
+            <span>Послухати</span>
+          </div>
+        </button>
+      `).join('');
+    }
+
+    function handleCardTap(char) {
+      const item = gameState.roundLetters.find(l => l.char === char);
+      if (!item) return;
+
+      soundEngine.playSuccessChime();
+      soundEngine.playLetterVoice(item.char, `${item.phonics}. ${item.word}!`);
+
+      const cardEl = document.getElementById(`intro-card-${char}`);
+      const badgeEl = document.getElementById(`star-badge-${char}`);
+
+      cardEl.classList.remove('correct-flash');
+      void cardEl.offsetWidth; // trigger reflow for replay
+      cardEl.classList.add('explored', 'correct-flash');
+
+      badgeEl.className = 'absolute top-4 right-4 w-9 h-9 rounded-full bg-[#06D6A0] text-white flex items-center justify-center text-xl font-black shadow-sm scale-110 transition-all';
+
+      gameState.exploredSet.add(char);
+
+      if (gameState.exploredSet.size === gameState.roundLetters.length) {
+        const btnNext = document.getElementById('btn-to-games');
+        const hintText = document.getElementById('cards-hint-text');
+        hintText.classList.add('hidden');
+        btnNext.classList.remove('hidden');
+        btnNext.classList.add('flex');
+      }
+    }
+
+    /**
+     * =========================================================================
+     * 7. STAGE 2: MINI-GAME 1 — SOUND & LETTER MATCH ("ЗНАЙДИ ЛІТЕРУ")
+     * =========================================================================
+     */
+    function startMiniGame1() {
+      soundEngine.playPopSound();
+      // Build a 3-question queue covering all round letters
+      let queue = shuffleArray(gameState.roundLetters);
+      while (queue.length < 3) {
+        queue.push(gameState.roundLetters[Math.floor(Math.random() * gameState.roundLetters.length)]);
+      }
+      gameState.g1Queue = queue.slice(0, 3);
+      gameState.g1Index = 0;
+      gameState.g1Locked = false;
+
+      showScreen('screen-game1');
+      renderGame1Turn();
+    }
+
+    function renderGame1Turn() {
+      const target = gameState.g1Queue[gameState.g1Index];
+      document.getElementById('g1-score-pill').textContent = `⭐ ${gameState.g1Index} / ${gameState.g1Queue.length}`;
+      document.getElementById('g1-prompt-text').textContent = `Де літера «${target.char}»?`;
+      document.getElementById('g1-feedback').textContent = '';
+      gameState.g1Locked = false;
+
+      const choices = shuffleArray(gameState.roundLetters);
+      const container = document.getElementById('g1-choices');
+      container.className = choices.length === 2
+        ? 'grid grid-cols-2 gap-5 w-full max-w-xl'
+        : 'grid grid-cols-3 gap-4 sm:gap-6 w-full max-w-3xl';
+
+      container.innerHTML = choices.map(item => `
+        <button
+          id="g1-card-${item.char}"
+          onclick="checkGame1Answer('${item.char}')"
+          class="letter-card py-8 sm:py-10 px-4 flex flex-col items-center justify-center cursor-pointer"
+        >
+          <span class="text-8xl sm:text-9xl font-black text-[#1D3557] leading-none">
+            ${formatDisplayLetter(item)}
+          </span>
+          ${settings.difficulty === 'gentle' ? `<span class="text-3xl mt-3">${item.emoji}</span>` : ''}
+        </button>
+      `).join('');
+
+      setTimeout(() => replayGame1Prompt(), 250);
+    }
+
+    function replayGame1Prompt() {
+      const target = gameState.g1Queue[gameState.g1Index];
+      if (target) {
+        soundEngine.playLetterVoice(target.char, `Знайди літеру ${target.phonics}`);
+      }
+    }
+
+    function checkGame1Answer(chosenChar) {
+      if (gameState.g1Locked) return;
+      const target = gameState.g1Queue[gameState.g1Index];
+      const cardEl = document.getElementById(`g1-card-${chosenChar}`);
+
+      if (chosenChar === target.char) {
+        gameState.g1Locked = true;
+        soundEngine.playSuccessChime();
+        spawnConfetti(16);
+        cardEl.classList.add('correct-flash');
+        document.getElementById('g1-feedback').textContent = `Правильно! Це літера «${target.char}»! 🎉`;
+        soundEngine.speakTTS(`Молодець! Це ${target.phonics}!`);
+
+        gameState.g1Index++;
+        document.getElementById('g1-score-pill').textContent = `⭐ ${gameState.g1Index} / ${gameState.g1Queue.length}`;
+
+        setTimeout(() => {
+          if (gameState.g1Index < gameState.g1Queue.length) {
+            renderGame1Turn();
+          } else {
+            startMiniGame2();
+          }
+        }, 1250);
+      } else {
+        soundEngine.playGentleNudge();
+        cardEl.classList.remove('gentle-wiggle');
+        void cardEl.offsetWidth;
+        cardEl.classList.add('gentle-wiggle');
+        document.getElementById('g1-feedback').textContent = `Спробуй ще раз! Шукаємо «${target.char}» 💡`;
+        soundEngine.speakTTS(`Спробуй ще раз. Де літера ${target.phonics}?`);
+      }
+    }
+
+    /**
+     * =========================================================================
+     * 8. STAGE 3: MINI-GAME 2 — PICTURE TO LETTER ("ЧИЯ КАРТИНКА?")
+     * =========================================================================
+     */
+    function startMiniGame2() {
+      let queue = shuffleArray(gameState.roundLetters);
+      while (queue.length < 3) {
+        queue.push(gameState.roundLetters[Math.floor(Math.random() * gameState.roundLetters.length)]);
+      }
+      gameState.g2Queue = queue.slice(0, 3);
+      gameState.g2Index = 0;
+      gameState.g2Locked = false;
+
+      showScreen('screen-game2');
+      renderGame2Turn();
+    }
+
+    function renderGame2Turn() {
+      const target = gameState.g2Queue[gameState.g2Index];
+      document.getElementById('g2-score-pill').textContent = `⭐ ${gameState.g2Index} / ${gameState.g2Queue.length}`;
+      document.getElementById('g2-emoji').textContent = target.emoji;
+      document.getElementById('g2-feedback').textContent = '';
+      gameState.g2Locked = false;
+
+      const wordLabel = document.getElementById('g2-word-label');
+      if (settings.difficulty === 'gentle') {
+        wordLabel.classList.remove('hidden');
+        wordLabel.innerHTML = formatHighlightedWord(target);
+      } else {
+        // Explorer & Confident: child identifies the word from the picture & audio
+        wordLabel.classList.add('hidden');
+      }
+
+      const choices = shuffleArray(gameState.roundLetters);
+      const container = document.getElementById('g2-choices');
+      container.className = choices.length === 2
+        ? 'grid grid-cols-2 gap-5 w-full max-w-xl'
+        : 'grid grid-cols-3 gap-4 sm:gap-6 w-full max-w-3xl';
+
+      container.innerHTML = choices.map(item => `
+        <button
+          id="g2-card-${item.char}"
+          onclick="checkGame2Answer('${item.char}')"
+          class="letter-card py-7 sm:py-9 px-4 flex items-center justify-center cursor-pointer"
+        >
+          <span class="text-8xl sm:text-9xl font-black text-[#1D3557] leading-none">
+            ${formatDisplayLetter(item)}
+          </span>
+        </button>
+      `).join('');
+
+      setTimeout(() => replayGame2Prompt(), 250);
+    }
+
+    function replayGame2Prompt() {
+      const target = gameState.g2Queue[gameState.g2Index];
+      if (!target) return;
+      if (target.char === 'Ь') {
+        soundEngine.playLetterVoice(target.char, `${target.word}. Яка літера в кінці слова?`);
+      } else if (target.char === 'И' || target.char === 'Ю') {
+        soundEngine.playLetterVoice(target.char, `${target.word}. Яка літера є у цьому слові?`);
+      } else {
+        soundEngine.playLetterVoice(target.char, `${target.word}. З якої літери починається слово ${target.word}?`);
+      }
+    }
+
+    function checkGame2Answer(chosenChar) {
+      if (gameState.g2Locked) return;
+      const target = gameState.g2Queue[gameState.g2Index];
+      const cardEl = document.getElementById(`g2-card-${chosenChar}`);
+
+      if (chosenChar === target.char) {
+        gameState.g2Locked = true;
+        soundEngine.playSuccessChime();
+        spawnConfetti(18);
+        cardEl.classList.add('correct-flash');
+
+        const wordLabel = document.getElementById('g2-word-label');
+        wordLabel.classList.remove('hidden');
+        wordLabel.innerHTML = formatHighlightedWord(target);
+
+        document.getElementById('g2-feedback').textContent = `Чудово! ${target.word} — літера «${target.char}»! 🌟`;
+        soundEngine.speakTTS(`Так! ${target.word}!`);
+
+        gameState.g2Index++;
+        document.getElementById('g2-score-pill').textContent = `⭐ ${gameState.g2Index} / ${gameState.g2Queue.length}`;
+
+        setTimeout(() => {
+          if (gameState.g2Index < gameState.g2Queue.length) {
+            renderGame2Turn();
+          } else {
+            startMiniGame3();
+          }
+        }, 1350);
+      } else {
+        soundEngine.playGentleNudge();
+        cardEl.classList.remove('gentle-wiggle');
+        void cardEl.offsetWidth;
+        cardEl.classList.add('gentle-wiggle');
+        document.getElementById('g2-feedback').textContent = `Послухай слово ще раз: «${target.word}» 👂`;
+        soundEngine.speakTTS(`Послухай уважно: ${target.word}`);
+      }
+    }
+
+    /**
+     * =========================================================================
+     * 9. STAGE 4: MINI-GAME 3 — FLOATING BUBBLE CATCH ("ЛОВИ КУЛЬКИ!")
+     * =========================================================================
+     */
+    function startMiniGame3() {
+      const target = gameState.roundLetters[Math.floor(Math.random() * gameState.roundLetters.length)];
+      gameState.g3Target = target;
+      gameState.g3Hits = 0;
+      gameState.g3Goal = 4;
+      gameState.bubbles = [];
+
+      document.getElementById('g3-target-letter').textContent = formatDisplayLetter(target);
+      updateBubbleStars();
+      showScreen('screen-game3');
+
+      setTimeout(() => replayGame3Prompt(), 250);
+      startBubbleLoop();
+    }
+
+    function replayGame3Prompt() {
+      if (gameState.g3Target) {
+        soundEngine.playLetterVoice(gameState.g3Target.char, `Лови кульки з літерою ${gameState.g3Target.phonics}!`);
+      }
+    }
+
+    function updateBubbleStars() {
+      const meter = document.getElementById('g3-stars-meter');
+      let html = '';
+      for (let i = 0; i < gameState.g3Goal; i++) {
+        if (i < gameState.g3Hits) {
+          html += '<span class="text-amber-400 drop-shadow-sm">⭐</span>';
+        } else {
+          html += '<span class="text-slate-300">☆</span>';
+        }
+      }
+      meter.innerHTML = html;
+    }
+
+    function startBubbleLoop() {
+      cleanupBubbleArena();
+      const arena = document.getElementById('bubble-arena');
+      arena.innerHTML = '';
+
+      // Spawn initial bubbles immediately so screen isn't empty
+      spawnBubble(true);
+      spawnBubble(false);
+      spawnBubble(true);
+
+      const spawnDelay = settings.difficulty === 'confident' ? 950 : 1200;
+      gameState.bubbleInterval = setInterval(() => {
+        if (gameState.bubbles.length < 7) {
+          // Ensure at least 50% chance of spawning the target letter
+          const forceTarget = Math.random() < 0.55;
+          spawnBubble(forceTarget);
+        }
+      }, spawnDelay);
+
+      function step() {
+        const arenaHeight = arena.clientHeight || 360;
+        const speedMult = settings.difficulty === 'confident' ? 1.45 : (settings.difficulty === 'explorer' ? 1.15 : 0.9);
+
+        for (let i = gameState.bubbles.length - 1; i >= 0; i--) {
+          const b = gameState.bubbles[i];
+          b.y -= b.speed * speedMult;
+          b.wobblePhase += 0.04;
+          const xOffset = Math.sin(b.wobblePhase) * 14;
+
+          b.el.style.transform = `translate(${b.x + xOffset}px, ${b.y}px)`;
+
+          if (b.y < -130) {
+            b.el.remove();
+            gameState.bubbles.splice(i, 1);
+          }
+        }
+        gameState.bubbleAnimFrame = requestAnimationFrame(step);
+      }
+
+      gameState.bubbleAnimFrame = requestAnimationFrame(step);
+    }
+
+    function spawnBubble(forceTarget = false) {
+      const arena = document.getElementById('bubble-arena');
+      if (!arena) return;
+
+      const arenaWidth = arena.clientWidth || 500;
+      const arenaHeight = arena.clientHeight || 360;
+
+      let chosenLetter;
+      if (forceTarget) {
+        chosenLetter = gameState.g3Target;
+      } else {
+        const distractors = gameState.roundLetters.filter(l => l.char !== gameState.g3Target.char);
+        chosenLetter = distractors.length > 0
+          ? distractors[Math.floor(Math.random() * distractors.length)]
+          : gameState.g3Target;
+      }
+
+      const size = window.innerWidth < 640 ? 94 : 114;
+      const x = 18 + Math.random() * Math.max(40, arenaWidth - size - 36);
+      const y = arenaHeight + 10;
+
+      const palette = [
+        'rgba(255, 209, 102, 0.78)',
+        'rgba(78, 168, 222, 0.72)',
+        'rgba(6, 214, 160, 0.72)',
+        'rgba(255, 107, 107, 0.7)',
+        'rgba(155, 135, 245, 0.72)'
+      ];
+      const bg = palette[Math.floor(Math.random() * palette.length)];
+
+      const el = document.createElement('button');
+      el.type = 'button';
+      el.className = 'bubble-item text-5xl sm:text-6xl text-[#1D3557]';
+      el.style.width = `${size}px`;
+      el.style.height = `${size}px`;
+      el.style.backgroundColor = bg;
+      el.style.transform = `translate(${x}px, ${y}px)`;
+      el.textContent = settings.difficulty === 'gentle'
+        ? chosenLetter.char
+        : (Math.random() < 0.5 ? chosenLetter.char : chosenLetter.lower);
+
+      const bubbleObj = {
+        el,
+        char: chosenLetter.char,
+        x,
+        y,
+        speed: 0.9 + Math.random() * 0.6,
+        wobblePhase: Math.random() * Math.PI * 2,
+        popped: false
+      };
+
+      const onTap = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        handleBubbleTap(bubbleObj);
+      };
+
+      el.addEventListener('pointerdown', onTap);
+      arena.appendChild(el);
+      gameState.bubbles.push(bubbleObj);
+    }
+
+    function handleBubbleTap(bubbleObj) {
+      if (bubbleObj.popped) return;
+
+      if (bubbleObj.char === gameState.g3Target.char) {
+        bubbleObj.popped = true;
+        soundEngine.playPopSound();
+        bubbleObj.el.style.transition = 'transform 0.18s ease-out, opacity 0.18s ease-out';
+        bubbleObj.el.style.transform += ' scale(1.45)';
+        bubbleObj.el.style.opacity = '0';
+
+        setTimeout(() => {
+          bubbleObj.el.remove();
+          gameState.bubbles = gameState.bubbles.filter(b => b !== bubbleObj);
+        }, 180);
+
+        gameState.g3Hits++;
+        updateBubbleStars();
+
+        if (gameState.g3Hits >= gameState.g3Goal) {
+          cleanupBubbleArena();
+          setTimeout(() => showCelebration(), 400);
+        }
+      } else {
+        // Gentle bounce away without penalty
+        soundEngine.playGentleNudge();
+        bubbleObj.speed += 1.6;
+        bubbleObj.el.style.opacity = '0.55';
+      }
+    }
+
+    function cleanupBubbleArena() {
+      if (gameState.bubbleInterval) {
+        clearInterval(gameState.bubbleInterval);
+        gameState.bubbleInterval = null;
+      }
+      if (gameState.bubbleAnimFrame) {
+        cancelAnimationFrame(gameState.bubbleAnimFrame);
+        gameState.bubbleAnimFrame = null;
+      }
+    }
+
+    /**
+     * =========================================================================
+     * 10. STAGE 5: ROUND CELEBRATION SCREEN
+     * =========================================================================
+     */
+    function showCelebration() {
+      soundEngine.playVictoryFanfare();
+      spawnConfetti(42);
+      showScreen('screen-celebration');
+
+      const container = document.getElementById('celebration-letters');
+      container.innerHTML = gameState.roundLetters.map(item => `
+        <div class="bg-white rounded-3xl border-4 border-amber-300 px-6 py-4 shadow-md flex flex-col items-center min-w-[130px]">
+          <span class="text-6xl sm:text-7xl font-black text-[#1D3557] leading-none">${formatDisplayLetter(item)}</span>
+          <span class="text-3xl my-1">${item.emoji}</span>
+          <span class="text-sm font-extrabold text-slate-600">${item.word}</span>
+        </div>
+      `).join('');
+
+      soundEngine.speakTTS('Молодець! Ти вивчив усі літери цього раунду!');
+    }
+
+    /**
+     * =========================================================================
+     * 11. PARENT CONTROLS MODAL LOGIC & HOLD GATE
+     * =========================================================================
+     */
+    let tempSettings = null;
+    let parentHoldTimer = null;
+
+    function startParentHold(e) {
+      if (e.button && e.button !== 0) return;
+      soundEngine.playClick();
+      const fill = document.getElementById('parent-hold-fill');
+      fill.style.transition = 'width 0.85s linear';
+      fill.style.width = '100%';
+
+      parentHoldTimer = setTimeout(() => {
+        cancelParentHold();
+        openParentModal();
+      }, 850);
+    }
+
+    function cancelParentHold() {
+      if (parentHoldTimer) {
+        clearTimeout(parentHoldTimer);
+        parentHoldTimer = null;
+      }
+      const fill = document.getElementById('parent-hold-fill');
+      if (fill) {
+        fill.style.transition = 'none';
+        fill.style.width = '0%';
+      }
+    }
+
+    function openParentModal() {
+      soundEngine.playPopSound();
+      soundEngine.updateTTSStatusBadge();
+      tempSettings = {
+        selectedLetters: [...settings.selectedLetters],
+        difficulty: settings.difficulty,
+        cardsPerRound: settings.cardsPerRound
+      };
+      renderParentModalUI();
+      const modal = document.getElementById('parent-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeParentModal() {
+      soundEngine.stopRecording();
+      soundEngine.stopAllSpeech();
+      const modal = document.getElementById('parent-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function saveAndCloseParentModal() {
+      if (tempSettings.selectedLetters.length < 3) {
+        document.getElementById('modal-warning').classList.remove('hidden');
+        soundEngine.playGentleNudge();
+        return;
+      }
+      settings.selectedLetters = [...tempSettings.selectedLetters];
+      settings.difficulty = tempSettings.difficulty;
+      settings.cardsPerRound = tempSettings.cardsPerRound;
+      saveSettings();
+      closeParentModal();
+      renderHomePreview();
+      soundEngine.playSuccessChime();
+    }
+
+    function setDifficulty(level) {
+      tempSettings.difficulty = level;
+      // Sync recommended cards per round automatically
+      tempSettings.cardsPerRound = level === 'gentle' ? 2 : 3;
+      renderParentModalUI();
+    }
+
+    function setCardsPerRound(num) {
+      tempSettings.cardsPerRound = num;
+      renderParentModalUI();
+    }
+
+    function toggleParentLetter(char) {
+      const idx = tempSettings.selectedLetters.indexOf(char);
+      if (idx >= 0) {
+        if (tempSettings.selectedLetters.length <= 3) {
+          document.getElementById('modal-warning').classList.remove('hidden');
+          soundEngine.playGentleNudge();
+          return;
+        }
+        tempSettings.selectedLetters.splice(idx, 1);
+      } else {
+        tempSettings.selectedLetters.push(char);
+      }
+      document.getElementById('modal-warning').classList.add('hidden');
+      renderParentModalUI();
+    }
+
+    async function handleRecordButton(e, char) {
+      e.stopPropagation();
+      if (soundEngine.recordingChar === char) {
+        soundEngine.stopRecording();
+      } else {
+        await soundEngine.startRecording(char);
+      }
+    }
+
+    async function handlePreviewVoice(e, char) {
+      e.stopPropagation();
+      const item = UKRAINIAN_ALPHABET.find(l => l.char === char);
+      if (item) {
+        await soundEngine.playLetterVoice(item.char, `${item.phonics}. ${item.word}`);
+      }
+    }
+
+    async function handleDeleteVoice(e, char) {
+      e.stopPropagation();
+      await soundEngine.deleteRecording(char);
+      soundEngine.playClick();
+      renderParentModalUI();
+    }
+
+    function applyPreset(presetName) {
+      if (presetName === 'starter') {
+        tempSettings.selectedLetters = [...STARTER_LETTERS];
+      } else if (presetName === 'vowels') {
+        tempSettings.selectedLetters = [...VOWEL_LETTERS];
+      } else if (presetName === 'all') {
+        tempSettings.selectedLetters = UKRAINIAN_ALPHABET.map(l => l.char);
+      } else if (presetName === 'min') {
+        tempSettings.selectedLetters = ['А', 'О', 'М'];
+      }
+      document.getElementById('modal-warning').classList.add('hidden');
+      renderParentModalUI();
+    }
+
+    function renderParentModalUI() {
+      // Difficulty buttons
+      ['gentle', 'explorer', 'confident'].forEach(level => {
+        const btn = document.getElementById(`diff-btn-${level}`);
+        if (tempSettings.difficulty === level) {
+          btn.className = 'diff-option text-left p-4 rounded-2xl border-3 border-[#4EA8DE] bg-sky-50 shadow-sm transition-all';
+        } else {
+          btn.className = 'diff-option text-left p-4 rounded-2xl border-3 border-slate-200 bg-white hover:bg-slate-50 transition-all';
+        }
+      });
+
+      // Cards per round buttons
+      [2, 3].forEach(num => {
+        const btn = document.getElementById(`cpr-btn-${num}`);
+        if (tempSettings.cardsPerRound === num) {
+          btn.className = 'px-5 py-2 rounded-xl font-black text-base border-2 border-[#05B384] bg-[#06D6A0] text-white transition-all';
+        } else {
+          btn.className = 'px-5 py-2 rounded-xl font-black text-base border-2 border-slate-200 bg-white text-slate-700 transition-all';
+        }
+      });
+
+      // Count & Alphabet Grid with Voice Recorder
+      document.getElementById('modal-selected-count').textContent = tempSettings.selectedLetters.length;
+
+      const grid = document.getElementById('parent-alphabet-grid');
+      grid.innerHTML = UKRAINIAN_ALPHABET.map(item => {
+        const isSelected = tempSettings.selectedLetters.includes(item.char);
+        const hasCustomAudio = soundEngine.recordedLetters.has(item.char);
+        const isRecordingThis = soundEngine.recordingChar === item.char;
+
+        const cardStyle = isSelected
+          ? 'bg-amber-50/90 border-[#E0A82E] shadow-sm'
+          : 'bg-slate-50 border-slate-200 opacity-75';
+
+        return `
+          <div
+            onclick="toggleParentLetter('${item.char}')"
+            class="p-2.5 rounded-2xl border-2 flex flex-col justify-between gap-2 cursor-pointer transition-all ${cardStyle}"
+          >
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-1.5">
+                <span class="w-8 h-8 rounded-lg ${isSelected ? 'bg-[#FFD166] text-[#1D3557]' : 'bg-slate-200 text-slate-500'} font-black text-lg flex items-center justify-center">
+                  ${item.char}
+                </span>
+                <span class="text-xs font-extrabold text-slate-600 truncate max-w-[68px]" title="${item.word}">
+                  ${item.emoji} ${item.word}
+                </span>
+              </div>
+              <span class="text-xs font-black ${isSelected ? 'text-emerald-600' : 'text-slate-300'}">
+                ${isSelected ? '✓' : '○'}
+              </span>
+            </div>
+
+            <!-- Voice Recording Controls -->
+            <div class="flex items-center gap-1 pt-1 border-t border-slate-200/70">
+              <button
+                type="button"
+                onclick="handleRecordButton(event, '${item.char}')"
+                class="flex-1 py-1 px-1.5 rounded-lg text-[11px] font-extrabold flex items-center justify-center gap-1 transition-all ${
+                  isRecordingThis
+                    ? 'bg-rose-500 text-white recording-pulse'
+                    : 'bg-white border border-slate-200 text-slate-700 hover:bg-rose-50'
+                }"
+                title="Записати власний голос"
+              >
+                <span>${isRecordingThis ? '⏹️' : '🎙️'}</span>
+                <span>${isRecordingThis ? 'Стоп' : 'Запис'}</span>
+              </button>
+
+              <button
+                type="button"
+                onclick="handlePreviewVoice(event, '${item.char}')"
+                class="p-1.5 rounded-lg text-xs font-bold ${
+                  hasCustomAudio
+                    ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                    : 'bg-sky-50 text-sky-700 border border-sky-200'
+                }"
+                title="${hasCustomAudio ? 'Прослухати ваш запис' : 'Прослухати синтезатор'}"
+              >
+                ▶️
+              </button>
+
+              ${hasCustomAudio ? `
+                <button
+                  type="button"
+                  onclick="handleDeleteVoice(event, '${item.char}')"
+                  class="p-1.5 rounded-lg text-xs bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100"
+                  title="Видалити запис"
+                >
+                  🗑️
+                </button>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    /**
+     * =========================================================================
+     * 12. INITIALIZATION
+     * =========================================================================
+     */
+    window.addEventListener('DOMContentLoaded', () => {
+      loadSettings();
+      updateSoundIcon();
+      renderHomePreview();
+      showScreen('screen-home');
+    });
+  </script>
+</body>
+</html>
